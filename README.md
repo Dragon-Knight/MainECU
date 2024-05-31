@@ -1,5 +1,9 @@
 # MainECU
 
+## Важное
+Эта версия прошивки предназначена для работы с платами версии 2. Если у вас более ранние модификации железа, то ищите прошивку в ветке [board_v1](https://github.com/starfactorypixel/MainECU/tree/board_v1).
+
+## Описание
 Проект в Visual Studio Code + PlatformIO
 
 Для сборки необходимо создать файл `platformio_local.ini` со следующим содержанием:
