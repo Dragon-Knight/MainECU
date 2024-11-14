@@ -120,9 +120,17 @@ int ESP32SJA1000Class::begin(long baudRate)
       return 0;
       break;
   }
+  
+  esp_chip_info_t chip;
+  esp_chip_info(&chip);
+  if(chip.revision >= 2)
+  {
+    modifyRegister(REG_IER, 0x10, 0); // From rev2 used as "divide BRP by 2"
+  }
 
   modifyRegister(REG_BTR1, 0x80, 0x80); // SAM = 1
-  writeRegister(REG_IER, 0xff); // enable all interrupts
+  //writeRegister(REG_IER, 0xff); // enable all interrupts
+  modifyRegister(REG_IER, 0xEF, 0xEF);
 
   // set filter to allow anything
   writeRegister(REG_ACRn(0), 0x00);
