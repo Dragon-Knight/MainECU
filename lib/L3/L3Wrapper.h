@@ -21,6 +21,8 @@ class L3Wrapper
 		
 		L3Wrapper()
 		{
+			memset(_dev_obj, 0x00, sizeof(_dev_obj));
+			
 			return;
 		}
 		
@@ -71,8 +73,9 @@ class L3Wrapper
 					
 					if( obj.rx_packet.GetError() == obj.rx_packet.ERROR_NONE )
 					{
+						// Перенесено в ответ на пинг.
 						obj.state = L3_DEVSTATE_ACTIVE;
-						obj.ping_attempts = 0;
+						//obj.ping_attempts = 0;
 
 
 						DEBUG_LOG_TOPIC("L3_ROOT", "RawPacket(%d): ", obj.rx_packet.GetPacketLength());
@@ -120,6 +123,8 @@ class L3Wrapper
 								{
 									// Ответ на пинг
 									DEBUG_LOG_TOPIC("L3_ROOT", "Ping RX;\n");
+
+									obj.ping_attempts = 0;
 								}
 
 								break;
@@ -158,8 +163,11 @@ class L3Wrapper
 				{
 					case L3_DEVSTATE_ACTIVE:
 					{
-						if( (time - obj.rx_packet.GetPacketTime()) > L3DevicePingInterval )
+						//if( (time - obj.rx_packet.GetPacketTime()) > L3DevicePingInterval )
+						if(time - obj.ping_lasttime > L3DevicePingInterval)
 						{
+							obj.ping_lasttime = time;
+							
 							DEBUG_LOG_TOPIC("L3_ROOT", "Ping TX;\n");
 							obj.state = L3_DEVSTATE_PING;
 							obj.ping_attempts++;
@@ -171,8 +179,11 @@ class L3Wrapper
 					}
 					case L3_DEVSTATE_PING:
 					{
-						if( (time - obj.rx_packet.GetPacketTime()) > (L3DevicePingInterval * (obj.ping_attempts + 1)) )
+						//if( (time - obj.rx_packet.GetPacketTime()) > (L3DevicePingInterval * (obj.ping_attempts + 1)) )
+						if( time - obj.ping_lasttime > (L3DevicePingInterval * (obj.ping_attempts + 1)) )
 						{
+							//obj.ping_lasttime = time;
+
 							if(obj.ping_attempts == L3DevicePingCount)
 							{
 								DEBUG_LOG_TOPIC("L3_ROOT", "Ping Timeout;\n");
@@ -234,6 +245,7 @@ class L3Wrapper
 			packet_t rx_packet;		// Объект принимаемого пакета.
 			packet_t tx_packet;		// Объект отправляемого пакета.
 			uint8_t ping_attempts;	// Кол-во попыток получить пинг.
+			uint32_t ping_lasttime;
 		};
 		
 		void _Send(_object_t &obj)
