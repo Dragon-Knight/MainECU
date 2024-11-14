@@ -36,10 +36,8 @@ namespace SPI
 			.queue_size = 7,
 		};
 		
-		esp_err_t q1 = spi_bus_initialize(VSPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
-		esp_err_t q2 = spi_bus_add_device(VSPI_HOST, &devcfg, &spi);
-
-		Serial.printf("errinit: %d, %d\n", q1, q2);
+		spi_bus_initialize(VSPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
+		spi_bus_add_device(VSPI_HOST, &devcfg, &spi);
 	}
 	
 	inline void SPI_Config(/*const SPIManagerInterface::spi_config_t &config*/)
@@ -55,11 +53,7 @@ namespace SPI
 			.tx_buffer = data,
 			.rx_buffer = nullptr,
 		};
-		esp_err_t q = spi_device_transmit(spi, &transaction);
-
-		Serial.printf("err: %d, len: %d, data: ", q, transaction.length);
-		Serial.write(data, length);
-		Serial.println();
+		spi_device_transmit(spi, &transaction);
 	}
 
 	inline void SPI_Read(uint8_t *data, uint16_t length)
