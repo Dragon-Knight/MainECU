@@ -184,6 +184,8 @@ void setup()
     L2.RegCallback(L2OnRX, L2OnError);
     L2.Init();
 
+	SPI::Dev_Active(SPI::PIN_CS_CAN_RS);
+
     
     L3.AddDevice(L3Driver_BT);
     L3.AddDevice(L3Driver_UART);

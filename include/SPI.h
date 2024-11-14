@@ -101,17 +101,35 @@ namespace SPI
 		PIN_CS_LED_R = (1 << 7)
 	};
 
-	void SelectDev(pin_mask_t dev)
+	
+	
+	uint8_t shift_pins = PIN_CS_NONE;
+	
+	void Dev_Active(pin_mask_t dev)
 	{
-		uint8_t data[] = {dev};
-		SPI_Write(data, sizeof(data));
+		shift_pins |= dev;
+
+		uint8_t tx[] = {shift_pins};
+		SPI_Write(tx, sizeof(tx));
 		
 		shift_latch.On();
 		asm("nop\n nop\n");
 		shift_latch.Off();
-
-		shift_oe.Off();
-
+		
+		return;
+	}
+	
+	void Dev_Deactive(pin_mask_t dev)
+	{
+		shift_pins &= ~dev;
+		
+		uint8_t tx[] = {shift_pins};
+		SPI_Write(tx, sizeof(tx));
+		
+		shift_latch.On();
+		asm("nop\n nop\n");
+		shift_latch.Off();
+		
 		return;
 	}
 
@@ -135,6 +153,8 @@ namespace SPI
 		shift_latch.Init();
 
 		SPI_Init();
+		Dev_Active(PIN_CS_NONE);
+		shift_oe.Off();
 
 /*
 		manager.AddDevice(flash);
@@ -176,17 +196,13 @@ namespace SPI
 			last_tick = time;
 
 			if(iter == 0)
-				SelectDev(PIN_CS_LED_G);
+				Dev_Active(PIN_CS_LED_G);
 			if(iter == 1)
-				SelectDev(PIN_CS_LED_R);
+				Dev_Active(PIN_CS_LED_R);
 			if(iter == 2)
-				SelectDev(PIN_CS_NONE);
-			if(iter == 3)
-				SelectDev( (pin_mask_t)(PIN_CS_LED_G | PIN_CS_LED_R) );
-			if(iter == 4)
-				SelectDev(PIN_CS_NONE);
+				Dev_Deactive( (pin_mask_t)(PIN_CS_LED_G | PIN_CS_LED_R) );
 			
-			if(++iter > 4) iter = 0;
+			if(++iter > 2) iter = 0;
 		}
 		
 		
