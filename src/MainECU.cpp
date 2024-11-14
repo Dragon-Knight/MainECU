@@ -15,6 +15,8 @@
 #include <VirtualValue.h>
 #include <CANScripts.h>
 
+#include <SPI.h>
+
 
 StateDB DB;
 
@@ -150,6 +152,8 @@ void setup()
 	Config::Setup();
 	Security::Setup();
 
+	SPI::Setup();
+
 
 	// ------------------------------------------------------------------------------------
 	Logger.PrintTopic("CORE").Print("Serial Number: ").Print(Config::obj.security.serial, sizeof(Config::obj.security.serial), LOG_OUT_TYPE_HEX).PrintNewLine();
@@ -245,6 +249,8 @@ void loop()
 
 	Config::Loop(current_time);
 	Security::Loop(current_time);
+
+	SPI::Loop(current_time);
 
     L2.Processing(current_time);
 
