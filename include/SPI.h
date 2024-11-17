@@ -148,6 +148,7 @@ namespace SPI
 
 		SPI_Init();
 		Dev_Active(PIN_CS_NONE);
+		Dev_Deactive( (pin_mask_t)(PIN_CS_FLASH | PIN_CS_EEPROM | PIN_CS_E07) );
 		shift_oe.Off();
 
 /*
