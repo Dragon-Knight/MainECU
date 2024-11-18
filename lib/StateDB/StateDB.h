@@ -11,13 +11,12 @@
 
 class StateDB
 {
-	static const uint16_t _max_id = 2048;	// Максимальный ID хранимый в БД, от 0 до (_max_id - 1).
-	static const uint8_t _max_data = 8;		// Максимальное кол-во байт в поле данных.
+	static constexpr uint16_t _max_id = 2048;	// Максимальный ID хранимый в БД, от 0 до (_max_id - 1).
+	static constexpr uint8_t _max_data = 8;		// Максимальное кол-во байт в поле данных.
 	
 	public:
 		
-		#pragma pack(push, 1)
-		struct db_t
+		struct __attribute__((packed)) db_t
 		{
 			uint8_t isset:1;				// Флаг наличия данных в ячейке.
 			uint8_t update:1;				// Флаг обновлённых, но не отправленных ( метод Processing() ) данных.
@@ -27,7 +26,6 @@ class StateDB
 			uint8_t length;					// Полезная длина данных.
 			uint32_t time;					// Время последнего изменения данных.
 		};
-		#pragma pack(pop)
 		
 		StateDB()
 		{
@@ -38,41 +36,28 @@ class StateDB
 		
 		bool Set(uint16_t id, uint8_t *data, uint8_t length, uint32_t time)
 		{
-			bool result = false;
+			if(id >= _max_id) return false;
+			if(length > _max_data) return false;
 			
-			if(id < _max_id && length <= _max_data)
-			{
-				_db[id].isset = 0b1;
-				_db[id].update = 0b1;
-				memcpy(_db[id].data, data, length);
-				_db[id].length = length;
-				_db[id].time = time;
-
-				result = true;
-			}
+			db_t &db_obj = _db[id];
+			db_obj.isset = 0b1;
+			db_obj.update = 0b1;
+			memcpy(db_obj.data, data, length);
+			db_obj.length = length;
+			db_obj.time = time;
 			
-			return result;
+			return true;
 		}
 		
 		bool Set(uint16_t id, db_t &obj)
 		{
-			bool result = false;
+			if(id >= _max_id) return false;
 			
-			if(id < _max_id && obj.length <= _max_data)
-			{
-				_db[id].isset = obj.isset;
-				_db[id].update = obj.update;
-				memcpy(_db[id].data, obj.data, obj.length);
-				_db[id].length = obj.length;
-				_db[id].time = obj.time;
-				#warning Replace to memcpy ?
-				
-				result = true;
-			}
+			memcpy(&_db[id], &obj, sizeof(db_t));
 			
-			return result;
+			return true;
 		}
-
+		
 		void SetObjType(uint16_t id, uint8_t type)
 		{
 			if(id >= _max_id) return;
@@ -84,39 +69,27 @@ class StateDB
 		
 		bool Get(uint16_t id, uint8_t *&data, uint8_t &length, uint32_t &time)
 		{
-			bool result = false;
-
-			if(id < _max_id && _db[id].isset == 0b1)
-			{
-				data = &_db[id].data[0];
-				length = _db[id].length;
-				time = _db[id].time;
-
-				result = true;
-			}
-			else
-			{
-				data = 0x00;
-				length = 0;
-			}
+			if(id >= _max_id) return false;
+			if(_db[id].isset == 0b0) return false;
 			
-			return result;
+			db_t &obj = _db[id];
+			data = obj.data;
+			length = obj.length;
+			time = obj.time;
+			
+			return true;
 		}
-
+		
 		bool Get(uint16_t id, db_t &obj)
 		{
-			bool result = false;
+			if(id >= _max_id) return false;
 			
-			if(id < _max_id/* && _db[id].isset == 0b1*/)
-			{
-				obj = _db[id];
-				
-				result = (_db[id].isset == 0b1);
-			}
+			db_t &db_obj = _db[id];
+			obj = db_obj;
 			
-			return result;
+			return (db_obj.isset == 0b1);
 		}
-
+		
 		uint8_t GetObjType(uint16_t id)
 		{
 			if(id >= _max_id) return 0;
@@ -124,23 +97,13 @@ class StateDB
 			return _db[id].type;
 		}
 		
-		bool Del(uint16_t id, bool force = false)
+		bool Del(uint16_t id)
 		{
-			bool result = false;
+			if(id >= _max_id) return false;
 			
-			if(id < _max_id)
-			{
-				_db[id].isset = 0b0;
-				_db[id].update = 0b0;
-				if(force == true)
-				{
-					memset(&_db[id], 0x00, sizeof(db_t));
-				}
-				
-				result = true;
-			}
+			memset(&_db[id], 0x00, sizeof(db_t));
 			
-			return result;
+			return true;
 		}
 		
 		void Processing(uint32_t &time, void (*func)(uint16_t can_id, db_t &db_obj))
@@ -148,14 +111,14 @@ class StateDB
 			uint16_t idx = 0;
 			for(db_t &obj : _db)
 			{
-				++idx;
-				
 				if(obj.isset == 0b0) continue;
 				if(obj.update == 0b0) continue;
 				if(obj.type == 0) continue;
 				
-				func(idx-1U, obj);
+				func(idx, obj);
+				
 				obj.update = 0b0;
+				++idx;
 			}
 			
 			return;
