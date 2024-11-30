@@ -17,6 +17,22 @@ class ScriptInterface
 		static StateDB *db_obj;
 		
 	protected:
+		
+		template <typename T> 
+		T Map(T input, T input_min, T input_max, T output_min, T output_max)
+		{
+			return (((input - input_min) * (output_max - output_min)) / (input_max - input_min)) + output_min;
+		}
+		
+		template <typename T> 
+		T MapClump(T input, T input_min, T input_max, T output_min, T output_max)
+		{
+			if(input < input_min) input = input_min;
+			if(input > input_max) input = input_max;
+			
+			return (((input - input_min) * (output_max - output_min)) / (input_max - input_min)) + output_min;
+		}
+
 		L2Wrapper::packet_v2_t _tx_packet;
 		
 };
@@ -95,6 +111,9 @@ class CANScripts
 
 			// Подрулевой переключатель 2, йййй.
 			_obj[0x0135] = nullptr;
+
+			// Вход педали газа на плате IO.
+			_obj[0x014C] = new ScriptThrottleCtrl();
 			
 			return;
 		}

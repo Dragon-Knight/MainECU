@@ -211,3 +211,31 @@ class ScriptPowerOnOff: public ScriptInterface
 	private:
 		bool _is_enable = false;
 };
+
+
+class ScriptThrottleCtrl : public ScriptInterface
+{
+	public:
+		void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) override
+		{
+			if(db_element.data[0] != 0x61) return;
+
+			uint16_t value = ((uint16_t)(db_element.data[2]) << 8) | db_element.data[1];
+			uint16_t value_map = MapClump(value, (uint16_t)650, (uint16_t)3000, (uint16_t)0, (uint16_t)1023);
+
+			_tx_packet.raw_data_len = 5;
+			_tx_packet.func_id = 0x61;
+			_tx_packet.data[0] = (value_map >> 0) & 0xFF;
+			_tx_packet.data[1] = (value_map >> 8) & 0xFF;
+			_tx_packet.data[2] = _tx_packet.data[0];
+			_tx_packet.data[3] = _tx_packet.data[1];
+
+			_tx_packet.id = 0x010E;
+			func(_tx_packet);
+
+			_tx_packet.id = 0x012E;
+			func(_tx_packet);
+			
+			return;
+		}
+};

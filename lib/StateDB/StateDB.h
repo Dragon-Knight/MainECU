@@ -108,9 +108,12 @@ class StateDB
 		
 		void Processing(uint32_t &time, void (*func)(uint16_t can_id, db_t &db_obj))
 		{
-			uint16_t idx = 0;
-			for(db_t &obj : _db)
+			//uint16_t idx = 0;
+			//for(db_t &obj : _db)
+			for(uint16_t idx = 0; idx < _max_id; ++idx)
 			{
+				db_t &obj = _db[idx];
+				
 				if(obj.isset == 0b0) continue;
 				if(obj.update == 0b0) continue;
 				if(obj.type == 0) continue;
@@ -118,7 +121,7 @@ class StateDB
 				func(idx, obj);
 				
 				obj.update = 0b0;
-				++idx;
+				//++idx;
 			}
 			
 			return;
