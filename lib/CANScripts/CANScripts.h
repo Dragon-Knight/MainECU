@@ -113,7 +113,7 @@ class CANScripts
 			_obj[0x0135] = nullptr;
 
 			// Вход педали газа на плате IO.
-			_obj[0x014C] = new ScriptThrottleCtrl();
+			_obj[0x016C] = new ScriptThrottleCtrl();
 			
 			return;
 		}
