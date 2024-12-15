@@ -114,6 +114,12 @@ class CANScripts
 
 			// Вход педали газа на плате IO.
 			_obj[0x016C] = new ScriptThrottleCtrl();
+
+			// Кнопки
+			_obj[0x0224] = new ScriptButtonsCtrl_CN2();
+			_obj[0x0225] = new ScriptButtonsCtrl_CN3();
+			_obj[0x0226] = new ScriptButtonsCtrl_CN4();
+			_obj[0x0227] = new ScriptButtonsCtrl_CN5();
 			
 			return;
 		}

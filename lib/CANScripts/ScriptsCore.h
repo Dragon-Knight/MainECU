@@ -223,22 +223,306 @@ class ScriptThrottleCtrl : public ScriptInterface
 			uint16_t value = ((uint16_t)(db_element.data[2]) << 8) | db_element.data[1];
 			uint16_t value_map = MapClump(value, (uint16_t)650, (uint16_t)3000, (uint16_t)0, (uint16_t)1023);
 
-			_tx_packet.raw_data_len = 3;
-			_tx_packet.func_id = 0x01;
-			_tx_packet.data[0] = (value_map >> 0) & 0xFF;
-			_tx_packet.data[1] = (value_map >> 8) & 0xFF;
+			_tx_packet.raw_data_len = 4;
+			_tx_packet.func_id = 0x0A;
+			_tx_packet.data[1] = (value_map >> 0) & 0xFF;
+			_tx_packet.data[2] = (value_map >> 8) & 0xFF;
 
 			_tx_packet.id = 0x0104;
+			_tx_packet.data[0] = ++counter[0];
 			func(_tx_packet);
 
 			_tx_packet.id = 0x0105;
+			_tx_packet.data[0] = ++counter[1];
 			func(_tx_packet);
 
 			_tx_packet.id = 0x0134;
+			_tx_packet.data[0] = ++counter[2];
 			func(_tx_packet);
 
 			_tx_packet.id = 0x0135;
+			_tx_packet.data[0] = ++counter[3];
 			func(_tx_packet);
+			
+			return;
+		}
+	
+	private:
+		uint8_t counter[4];
+};
+
+
+class ScriptButtonsCtrl_CN2 : public ScriptInterface
+{
+	public:
+		void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) override
+		{
+			if(db_element.data[0] != 0x65) return;
+
+			switch(db_element.data[1])
+			{
+				case 1:
+				{
+					
+					
+					break;
+				}
+				case 2:
+				{
+					
+					
+					break;
+				}
+				case 3:
+				{
+					
+					
+					break;
+				}
+				case 4:
+				{
+					
+					
+					break;
+				}
+				case 5:
+				{
+					
+					
+					break;
+				}
+				case 6:
+				{
+					
+					
+					break;
+				}
+				case 7:
+				{
+					
+					
+					break;
+				}
+				case 8:
+				{
+					
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			
+			
+			return;
+		}
+};
+
+class ScriptButtonsCtrl_CN3 : public ScriptInterface
+{
+	public:
+		void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) override
+		{
+			if(db_element.data[0] != 0x65) return;
+
+			switch(db_element.data[1])
+			{
+				case 9:
+				{
+					
+					
+					break;
+				}
+				case 10:
+				{
+					
+					
+					break;
+				}
+				case 11:
+				{
+					
+					
+					break;
+				}
+				case 12:
+				{
+					
+					
+					break;
+				}
+				case 13:
+				{
+					
+					
+					break;
+				}
+				case 14:
+				{
+					
+					
+					break;
+				}
+				case 15:
+				{
+					
+					
+					break;
+				}
+				case 16:
+				{
+					
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			
+			
+			return;
+		}
+};
+
+class ScriptButtonsCtrl_CN4 : public ScriptInterface
+{
+	public:
+		void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) override
+		{
+			if(db_element.data[0] != 0x65) return;
+
+			switch(db_element.data[1])
+			{
+				case 17:
+				{
+					
+					
+					break;
+				}
+				case 18:
+				{
+					
+					
+					break;
+				}
+				case 19:
+				{
+					
+					
+					break;
+				}
+				case 20:
+				{
+					
+					
+					break;
+				}
+				case 21:
+				{
+					
+					
+					break;
+				}
+				case 22:
+				{
+					
+					
+					break;
+				}
+				case 23:
+				{
+					
+					
+					break;
+				}
+				case 24:
+				{
+					
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			
+			
+			return;
+		}
+};
+
+class ScriptButtonsCtrl_CN5 : public ScriptInterface
+{
+	public:
+		void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) override
+		{
+			if(db_element.data[0] != 0x65) return;
+
+			switch(db_element.data[1])
+			{
+				case 25:
+				{
+					
+					
+					break;
+				}
+				case 26:
+				{
+					
+					
+					break;
+				}
+				case 27:
+				{
+					
+					
+					break;
+				}
+				case 28:
+				{
+					
+					
+					break;
+				}
+				case 29:
+				{
+					
+					
+					break;
+				}
+				case 30:
+				{
+					
+					
+					break;
+				}
+				case 31:
+				{
+					
+					
+					break;
+				}
+				case 32:
+				{
+					
+					
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
+			
+			
 			
 			return;
 		}
