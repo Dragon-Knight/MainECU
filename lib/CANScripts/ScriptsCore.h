@@ -219,30 +219,15 @@ class ScriptThrottleCtrl : public ScriptInterface
 		void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) override
 		{
 			if(db_element.data[0] != 0x61) return;
-
+			
 			uint16_t value = ((uint16_t)(db_element.data[2]) << 8) | db_element.data[1];
 			uint16_t value_map = MapClump(value, (uint16_t)650, (uint16_t)3000, (uint16_t)0, (uint16_t)1023);
-
-			_tx_packet.raw_data_len = 4;
-			_tx_packet.func_id = 0x0A;
-			_tx_packet.data[1] = (value_map >> 0) & 0xFF;
-			_tx_packet.data[2] = (value_map >> 8) & 0xFF;
-
-			_tx_packet.id = 0x0104;
-			_tx_packet.data[0] = ++counter[0];
-			func(_tx_packet);
-
-			_tx_packet.id = 0x0105;
-			_tx_packet.data[0] = ++counter[1];
-			func(_tx_packet);
-
-			_tx_packet.id = 0x0134;
-			_tx_packet.data[0] = ++counter[2];
-			func(_tx_packet);
-
-			_tx_packet.id = 0x0135;
-			_tx_packet.data[0] = ++counter[3];
-			func(_tx_packet);
+			
+			uint8_t data[] = {0x0A, 0x00, ((value_map >> 0) & 0xFF), ((value_map >> 8) & 0xFF)};
+			data[1] = ++counter[0]; Send(0x0104, data, sizeof(data));
+			data[1] = ++counter[1]; Send(0x0105, data, sizeof(data));
+			data[1] = ++counter[2]; Send(0x0134, data, sizeof(data));
+			data[1] = ++counter[3]; Send(0x0135, data, sizeof(data));
 			
 			return;
 		}
@@ -263,32 +248,45 @@ class ScriptButtonsCtrl_CN2 : public ScriptInterface
 			{
 				case 1:
 				{
-					
+					_gear = (db_element.data[2] == 0x0F) ? 0x01 : 0x00;
+					_gear_update = true;
 					
 					break;
 				}
 				case 2:
 				{
-					
+					_gear = (db_element.data[2] == 0x0F) ? 0x02 : 0x00;
+					_gear_update = true;
 					
 					break;
 				}
 				case 3:
 				{
-					
+					_gear = (db_element.data[2] == 0x0F) ? 0x03 : 0x00;
+					_gear_update = true;
 					
 					break;
 				}
 				case 4:
 				{
-					
-					
+					uint8_t ignition = (db_element.data[2] == 0x0F) ? 0xFF : 0x00;
+					uint8_t data[] = {0x01, ignition};
+					Send(0x010A, data, sizeof(data));
+					Send(0x010B, data, sizeof(data));
+					Send(0x013A, data, sizeof(data));
+					Send(0x013B, data, sizeof(data));
+
 					break;
 				}
 				case 5:
 				{
-					
-					
+					uint8_t brake = (db_element.data[2] == 0x0F) ? 0xFF : 0x00;
+					uint8_t data[] = {0x01, brake};
+					Send(0x0108, data, sizeof(data));
+					Send(0x0109, data, sizeof(data));
+					Send(0x0138, data, sizeof(data));
+					Send(0x0139, data, sizeof(data));
+
 					break;
 				}
 				case 6:
@@ -315,10 +313,24 @@ class ScriptButtonsCtrl_CN2 : public ScriptInterface
 				}
 			}
 			
-			
+			if(_gear_update == true)
+			{
+				uint8_t data[] = {0x01, _gear};
+				Send(0x0106, data, sizeof(data));
+				Send(0x0107, data, sizeof(data));
+				Send(0x0136, data, sizeof(data));
+				Send(0x0137, data, sizeof(data));
+
+				_gear_update = false;
+			}
 			
 			return;
 		}
+
+	private:
+
+		uint8_t _gear = 0x00;
+		bool _gear_update = false;
 };
 
 class ScriptButtonsCtrl_CN3 : public ScriptInterface

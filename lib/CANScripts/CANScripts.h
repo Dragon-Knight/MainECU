@@ -14,6 +14,7 @@ class ScriptInterface
 		
 		virtual void Run(uint16_t id, StateDB::db_t &db_element, tx_t func) = 0;
 		
+		static L2Wrapper *l2_obj;
 		static StateDB *db_obj;
 		
 	protected:
@@ -32,10 +33,16 @@ class ScriptInterface
 			
 			return (((input - input_min) * (output_max - output_min)) / (input_max - input_min)) + output_min;
 		}
-
+		
+		inline bool Send(uint16_t id, uint8_t data[8], uint8_t length)
+		{
+			return l2_obj->Send(id, data, length);
+		}
+		
 		L2Wrapper::packet_v2_t _tx_packet;
 		
 };
+L2Wrapper* ScriptInterface::l2_obj = nullptr;
 StateDB* ScriptInterface::db_obj = nullptr;
 
 #include "ScriptsCore.h"
@@ -48,6 +55,7 @@ class CANScripts
 
 		CANScripts(L2Wrapper *l2_obj, StateDB *db_obj) : _l2_obj(l2_obj)
 		{
+			ScriptInterface::l2_obj = l2_obj;
 			ScriptInterface::db_obj = db_obj;
 			
 			memset(&_obj, 0x00, sizeof(_obj));
