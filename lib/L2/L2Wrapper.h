@@ -13,7 +13,8 @@ class L2Wrapper
 	static const uint8_t _rx_buff_size = 32U;
 	
 	public:
-		using packet_t = ESP32SJA1000Class::packet_t;
+		//using packet_t = ESP32SJA1000Class::packet_t;
+		using packet_t = ESP32SJA1000Class::packet_new_t;
 		struct packet_v2_t
 		{
 			uint16_t id;
@@ -45,15 +46,15 @@ class L2Wrapper
 		
 		void Init()
 		{
-			this->_driver.setPins(GPIO_NUM_22, GPIO_NUM_21);
-			this->_driver.onReceive([&]( packet_t packet )
+			this->_driver.setCallback([&](packet_t &packet)
 			{
-				if( this->_request_buff.Write( packet ) == false )
+				if( this->_request_buff.Write(packet) == false )
 				{
 					// Значит получили новый пакет, но буфер полный.. DragonPanic.
 					this->_rx_overflow = true;
 				}
 			});
+			this->_driver.setPins(GPIO_NUM_22, GPIO_NUM_21);
 			this->_driver.begin(500000);
 			
 			//pinMode(GPIO_NUM_21, OUTPUT);
