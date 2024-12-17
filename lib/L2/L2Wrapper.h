@@ -97,6 +97,21 @@ class L2Wrapper
 			return result;
 		}
 		
+		bool Send(uint16_t id, uint8_t data[8], uint8_t length)
+		{
+			bool result = false;
+			
+#if defined(NO_CAN_SEND)
+			result = true;
+#else
+			this->_driver.beginPacket(id);
+			this->_driver.write(data, length);
+			result = this->_driver.endPacket();
+#endif
+			
+			return result;
+		}
+		
 		void Processing(uint32_t &time)
 		{
 			struct { packet_t request; packet_t response; } packets;
