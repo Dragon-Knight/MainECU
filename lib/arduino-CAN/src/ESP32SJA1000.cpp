@@ -332,10 +332,10 @@ uint8_t ESP32SJA1000Class::parsePacket()
 
 
 
-void ESP32SJA1000Class::filter(uint16_t id, uint16_t mask)
+bool ESP32SJA1000Class::filter(uint16_t id, uint16_t mask)
 {
-	id &= 0x7FF;
-	mask &= 0x7FF;
+	id &= 0x07FF;
+	mask &= 0x07FF;
 	
 	modifyRegister(REG_MOD, 0x17, 0x01);
 	
@@ -351,10 +351,10 @@ void ESP32SJA1000Class::filter(uint16_t id, uint16_t mask)
 	
 	modifyRegister(REG_MOD, 0x17, 0x00);
 	
-	return;
+	return true;
 }
 
-void ESP32SJA1000Class::filterExtended(uint32_t id, uint32_t mask)
+bool ESP32SJA1000Class::filterExtended(uint32_t id, uint32_t mask)
 {
 	id &= 0x1FFFFFFF;
 	mask &= 0x1FFFFFFF;
@@ -373,7 +373,7 @@ void ESP32SJA1000Class::filterExtended(uint32_t id, uint32_t mask)
 	
 	modifyRegister(REG_MOD, 0x17, 0x00);
 	
-	return;
+	return true;
 }
 
 

@@ -52,8 +52,10 @@ class ESP32SJA1000Class
 		bool endPacket();
 		bool SendPacket(packet_new_t &packet);
 		
-		void filter(uint16_t id, uint16_t mask);
-		void filterExtended(uint32_t id, uint32_t mask);
+		bool filter(uint16_t id) { return filter(id, 0x07FF); }
+		bool filter(uint16_t id, uint16_t mask);
+		bool filterExtended(uint32_t id) { return filterExtended(id, 0x1FFFFFFF); }
+		bool filterExtended(uint32_t id, uint32_t mask);
 		
 		void cmd_reset();
 		void cmd_observe();
