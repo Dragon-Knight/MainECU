@@ -450,6 +450,7 @@ bool L3OnRX(L3DevType_t dev, L3Wrapper::packet_t &request, L3Wrapper::packet_t &
             {
                 SubsDB.Set(request.Param(), dev, true);
 
+/*
                 //L2Wrapper::packet_t can_packet = { request.Param(), false, false, 0, request.GetDataLength() };
 				L2Wrapper::packet_t can_packet = {};
 				can_packet.id = request.Param();
@@ -460,6 +461,8 @@ bool L3OnRX(L3DevType_t dev, L3Wrapper::packet_t &request, L3Wrapper::packet_t &
                 }
                 
                 L2.Send(can_packet);
+*/
+				L2.Send( request.Param(), data_ptr, request.GetDataLength() );
             }
             else
 			{
