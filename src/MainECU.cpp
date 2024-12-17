@@ -450,7 +450,10 @@ bool L3OnRX(L3DevType_t dev, L3Wrapper::packet_t &request, L3Wrapper::packet_t &
             {
                 SubsDB.Set(request.Param(), dev, true);
 
-                L2Wrapper::packet_t can_packet = { request.Param(), false, false, 0, request.GetDataLength() };
+                //L2Wrapper::packet_t can_packet = { request.Param(), false, false, 0, request.GetDataLength() };
+				L2Wrapper::packet_t can_packet = {};
+				can_packet.id = request.Param();
+				can_packet.length = request.GetDataLength();
                 for(uint8_t i = 0; i < request.GetDataLength(); ++i)
                 {
                     can_packet.data[i] = data_ptr[i];
@@ -581,25 +584,25 @@ bool L2OnRX(L2Wrapper::packet_t &request, L2Wrapper::packet_t &response)
 {
 	bool result = false;
 	
-	DEBUG_LOG_TOPIC("L2_OnRX", "addr: 0x%04X, len: %d, data: ", request.address, request.length);
+	DEBUG_LOG_TOPIC("L2_OnRX", "addr: 0x%04X, len: %d, data: ", request.id, request.length);
 	DEBUG_LOG_ARRAY_HEX(nullptr, request.data, request.length);
 	DEBUG_LOG_SIMPLE(";\n");
 
 	//#warning Remove this after debug !!!1
-	DB.SetObjType(request.address, 0x01);
+	DB.SetObjType(request.id, 0x01);
 	
 	// Получен ответ на запрос типа CAN объекта.
 	if(request.length == 2 && request.data[0] == 0x7A)
 	{
-		DB.SetObjType(request.address, request.data[1]);
+		DB.SetObjType(request.id, request.data[1]);
 
-		DEBUG_LOG_TOPIC("L2_DEB", "SET, addr: 0x%04X, type: 0x%02X;\n", request.address, request.data[1]);
+		DEBUG_LOG_TOPIC("L2_DEB", "SET, addr: 0x%04X, type: 0x%02X;\n", request.id, request.data[1]);
 	}
 	// Получен любой другой CAN пакет.
 	else
 	{
 		// Тип CAN объекта неизвестен.
-		if(DB.GetObjType(request.address) == 0)
+		if(DB.GetObjType(request.id) == 0)
 		{
 			/*
 			response.address = request.address;
@@ -617,7 +620,7 @@ bool L2OnRX(L2Wrapper::packet_t &request, L2Wrapper::packet_t &response)
 			*/
 		}
 		
-		DB.Set(request.address, request.data, request.length, millis());
+		DB.Set(request.id, request.data, request.length, millis());
 	}
 	
 	return result;
