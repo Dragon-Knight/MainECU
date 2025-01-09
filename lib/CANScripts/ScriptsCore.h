@@ -221,7 +221,11 @@ class ScriptThrottleCtrl : public ScriptInterface
 			if(db_element.data[0] != 0x61) return;
 			
 			uint16_t value = ((uint16_t)(db_element.data[2]) << 8) | db_element.data[1];
-			uint16_t value_map = MapClump(value, (uint16_t)650, (uint16_t)3000, (uint16_t)0, (uint16_t)1023);
+			//uint16_t value_map = MapClump(value, (uint16_t)650, (uint16_t)3000, (uint16_t)0, (uint16_t)1023);
+			
+			// Отправляем как значение как есть, плата моторов разберётся.
+			// Условие: разрадность данных должна быть стандартатизированной, например 12 бит
+			uint16_t value_map = value;
 			
 			uint8_t data[] = {0x0A, 0x00, ((value_map >> 0) & 0xFF), ((value_map >> 8) & 0xFF)};
 			data[1] = ++counter[0]; Send(0x0104, data, sizeof(data));
@@ -248,21 +252,21 @@ class ScriptButtonsCtrl_CN2 : public ScriptInterface
 			{
 				case 1:
 				{
-					_gear = (db_element.data[2] == 0x0F) ? 0x01 : 0x00;
+					_gear = (db_element.data[2] == 0x0F) ? 0b00000001 : 0x00;
 					_gear_update = true;
 					
 					break;
 				}
 				case 2:
 				{
-					_gear = (db_element.data[2] == 0x0F) ? 0x02 : 0x00;
+					_gear = (db_element.data[2] == 0x0F) ? 0b00000010 : 0x00;
 					_gear_update = true;
 					
 					break;
 				}
 				case 3:
 				{
-					_gear = (db_element.data[2] == 0x0F) ? 0x03 : 0x00;
+					_gear = (db_element.data[2] == 0x0F) ? 0b00000100 : 0x00;
 					_gear_update = true;
 					
 					break;
