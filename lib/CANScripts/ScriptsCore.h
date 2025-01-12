@@ -250,28 +250,44 @@ class ScriptButtonsCtrl_CN2 : public ScriptInterface
 
 			switch(db_element.data[1])
 			{
+				// Передача: Вперёд
 				case 1:
 				{
-					_gear = (db_element.data[2] == 0x0F) ? 0b00000001 : 0x00;
+					_gear = (db_element.data[2] == 0x0F) ? (1 << 0) : 0x00;
 					_gear_update = true;
 					
 					break;
 				}
+
+				// Передача: Назад
 				case 2:
 				{
-					_gear = (db_element.data[2] == 0x0F) ? 0b00000010 : 0x00;
+					_gear = (db_element.data[2] == 0x0F) ? (1 << 1) : 0x00;
 					_gear_update = true;
 					
 					break;
 				}
+
+				// Передача: Вперёд мало
 				case 3:
 				{
-					_gear = (db_element.data[2] == 0x0F) ? 0b00000100 : 0x00;
+					_gear = (db_element.data[2] == 0x0F) ? (1 << 2) : 0x00;
 					_gear_update = true;
 					
 					break;
 				}
+				
+				// Передача: Буст
 				case 4:
+				{
+					_gear = (db_element.data[2] == 0x0F) ? (1 << 3) : 0x00;
+					_gear_update = true;
+					
+					break;
+				}
+
+				// Включение зажигания
+				case 5:
 				{
 					uint8_t ignition = (db_element.data[2] == 0x0F) ? 0xFF : 0x00;
 					uint8_t data[] = {0x01, ignition};
@@ -282,7 +298,9 @@ class ScriptButtonsCtrl_CN2 : public ScriptInterface
 
 					break;
 				}
-				case 5:
+
+				// Торможение
+				case 6:
 				{
 					uint8_t brake = (db_element.data[2] == 0x0F) ? 0xFF : 0x00;
 					uint8_t data[] = {0x01, brake};
@@ -291,12 +309,6 @@ class ScriptButtonsCtrl_CN2 : public ScriptInterface
 					Send(0x0138, data, sizeof(data));
 					Send(0x0139, data, sizeof(data));
 
-					break;
-				}
-				case 6:
-				{
-					
-					
 					break;
 				}
 				case 7:
